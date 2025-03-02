@@ -3,6 +3,7 @@ import sys
 import pygame
 # 用于创建游戏窗口、处理事件、绘制图形等
 from time import sleep
+import random
 
 from settings import Settings
 # 管理游戏的设置
@@ -213,9 +214,20 @@ class AlienInvasion(object):
         # 创建一个外星人并将其加入当前行
         alien = Alien(self)
         alien_width,alien_height = alien.rect.size
-        alien.x = alien_width + 2 * alien_width * alien_number
+
+        alien.x = alien_width + 2 * alien_width * alien_number + random.randint(-20, 20)
         alien.rect.x = alien.x
-        alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
+        alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number + random.randint(-20, 20)
+
+         # 确保外星人不会超出屏幕边界
+        if alien.rect.left < 0:
+            alien.rect.left = 0
+        if alien.rect.right > self.settings.screen_width:
+            alien.rect.right = self.settings.screen_width
+        if alien.rect.top < 0:
+            alien.rect.top = 0
+        if alien.rect.bottom > self.settings.screen_height:
+            alien.rect.bottom = self.settings.screen_height
         self.aliens.add(alien)
         
     def _check_fleet_edges(self):

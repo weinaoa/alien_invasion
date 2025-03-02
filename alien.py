@@ -1,4 +1,5 @@
 import pygame
+import random
 from pygame.sprite import Sprite
 
 class Alien(Sprite):
@@ -14,8 +15,9 @@ class Alien(Sprite):
         self.rect = self.image.get_rect()
 
         # 每个外星人最初都在屏幕左上角附近
-        self.rect.x = self.rect.width
-        self.rect.y = self.rect.height
+        self.rect.x = self.rect.width + random.randint(-50,50)
+        self.rect.y = self.rect.height + random.randint(-50,50)
+    
 
         # 存储外星人的精确水平位置
         self.x = float(self.rect.x)
