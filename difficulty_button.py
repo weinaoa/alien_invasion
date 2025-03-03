@@ -15,8 +15,8 @@ class DifficultyButton(Sprite):
         self.text_color = (255,255,255)
         self.font = pygame.font.SysFont(None,48)
 
-        # 创建按钮的rect对象（先临时初始化）
-        self.rect = pygame.Rect(0,0,self.width,self.height)
+        # # 创建按钮的rect对象（先临时初始化）
+        # self.rect = pygame.Rect(0,0,self.width,self.height)
 
         # 文本渲染
         self._prep_text(text)
@@ -43,5 +43,18 @@ class DifficultyButton(Sprite):
         self.settings.initialize_difficulty(self.difficulty_level)
 
     def draw(self):
-        self.screen.fill(self.button_color,self.rect)
-        self.screen.blit(self.image,self.text_rect)
+        """绘制圆角按钮"""
+        # 绘制圆角背景
+        pygame.draw.rect(
+            self.screen,
+            self.button_color,
+            self.rect.inflate(20,10),
+            border_radius=15,
+            width = 0
+        )
+        # 绘制文本
+        text_pos = (
+            self.rect.centerx - self.image.get_width()//2,
+            self.rect.centery - self.image.get_height()//2
+        )
+        self.screen.blit(self.image, text_pos)

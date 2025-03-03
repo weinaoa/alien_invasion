@@ -13,16 +13,14 @@ class Settings(object):
         self.ship_limit = 3
         # 子弹设置
         self.bullet_speed = 1.5
-        self.bullet_width = 300
+        self.bullet_width = 50
         self.bullet_height = 15
         self.bullet_color = (60,60,60)
         self.bullet_allowed = 5
 
         # 外星人设置
         self.alien_speed = 1.0
-        self.fleet_drop_speed = 5
-        # fleet_direction为1表示向右移，为-1表示向左移
-        self.fleet_direction = 1
+        self.fleet_drop_speed = 20
         
         # 加快游戏节奏的速度
         self.speedup_scale = 1.1

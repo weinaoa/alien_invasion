@@ -192,9 +192,8 @@ class AlienInvasion(object):
                 break
 
     def _update_aliens(self):
-        """检查是否有外星人位于屏幕边缘，更新外星人群中所有外星人的位置"""
-        self._check_fleet_edges()
-        self.aliens.update()
+        """更新外星人群中所有外星人的位置"""
+        self.aliens.update()    # 每个外星人自己处理移动
         # 检测外星人和飞船之间的碰撞
         if pygame.sprite.spritecollideany(self.ship,self.aliens):
             # print("Ship hit!!!")
@@ -262,18 +261,19 @@ class AlienInvasion(object):
             alien.rect.bottom = self.settings.screen_height
         self.aliens.add(alien)
         
-    def _check_fleet_edges(self):
-        """有外星人到达边缘时采取相应的措施"""
-        for alien in self.aliens.sprites():
-            if alien.check_edges():
-                self._change_fleet_direction()
-                break
+    # def _check_fleet_edges(self):
+    #     """有外星人到达边缘时采取相应的措施"""
+    #     for alien in self.aliens.sprites():
+    #         if alien.check_edges():
+    #             self._change_fleet_direction(alien)
+    #             break
 
-    def _change_fleet_direction(self):
-        """将整群外星人下移，并改变他们的方向"""
-        for alien in self.aliens.sprites():
-            alien.rect.y += self.settings.fleet_drop_speed
-        self.settings.fleet_direction *= -1
+    # def _change_fleet_direction(self,alien):
+    #     """将整群外星人下移，并改变他们的方向"""
+    #     # for alien in self.aliens.sprites():
+    #     alien.rect.y += self.settings.fleet_drop_speed
+    #     self.settings.fleet_direction *= -1
+    #     self.alien.update()
 
     def _update_screen(self):
         # 每次循环时都重绘屏幕

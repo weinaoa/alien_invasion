@@ -23,12 +23,21 @@ class Button(object):
     def _prep_msg(self,msg):
         """将msg渲染为图像，并将其在按钮上居中"""
         self.msg_image = self.font.render(msg,True,self.text_color,
-                                          self.button_color)
+                                          None)
         self.msg_image_rect = self.msg_image.get_rect()
         self.msg_image_rect.center = self.rect.center
 
     def draw_button(self):
-        # 绘制一个用颜色填充的按钮，再绘制文本
-        self.screen.fill(self.button_color,self.rect)
-        self.screen.blit(self.msg_image,self.msg_image_rect)
-        
+        """绘制圆角按钮"""
+        if self.visible:
+            # 绘制圆角矩形
+            pygame.draw.rect(
+                self.screen, 
+                self.button_color, 
+                self.rect, 
+                border_radius=15
+            )
+            # 精确居中文本
+            text_x = self.rect.x + (self.width - self.msg_image.get_width()) // 2
+            text_y = self.rect.y + (self.height - self.msg_image.get_height()) // 2
+            self.screen.blit(self.msg_image, (text_x, text_y))
