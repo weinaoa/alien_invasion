@@ -14,6 +14,7 @@ from alien import Alien
 from game_stats import GameStats
 from button import Button
 from difficulty_button import DifficultyButton
+from scoreboard import ScoreBoard
 
 class AlienInvasion(object):
     """管理游戏资源和行为的类"""
@@ -30,8 +31,11 @@ class AlienInvasion(object):
         # self.settings.screen_width = self.screen.get_rect().width
         pygame.display.set_caption("Alien Invasion")
 
-        # 创建一个用于存储游戏统计信息的实例
+        # 创建存储游戏统计信息的实例
+        # 并创建记分牌
         self.stats = GameStats(self)
+        self.sb = ScoreBoard(self)
+
         self.ship = Ship(self)  # 这里传入的self就是AlienInvasion对象本身
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -95,6 +99,7 @@ class AlienInvasion(object):
             self.choosing_difficulty = True
             self.play_button.visible = False
             pygame.mouse.set_visible(True)
+            self.sb.prep_score()
             # 重置游戏设置
             # self.settings.initialize_dynamic_settings()
             # self._start_game()
@@ -174,8 +179,14 @@ class AlienInvasion(object):
         # 检查是否有子弹击中了外星人
         # 如果是，就删除相应的子弹和外星人
         collisions = pygame.sprite.groupcollide(
-            self.bullets,self.aliens,False,True
+            self.bullets,self.aliens,True,True
         )
+        if collisions:
+            # 此处用的是高能子弹，如果用普通子弹的话，应该要改成遍历字典的方式
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points*len(aliens)
+            self.sb.prep_score()
+
         if not self.aliens:
             # 删除现有的子弹并新建一群外星人
             self.bullets.empty()
@@ -226,14 +237,14 @@ class AlienInvasion(object):
         # 外星人的间距为外星人宽度
         alien =Alien(self)
         alien_width,alien_height = alien.rect.size
-        available_space_x = self.settings.screen_width - (2*alien_width)
-        number_aliens_x = available_space_x // (2 * alien_width)
+        available_space_x = self.settings.screen_width - (3*alien_width)
+        number_aliens_x = available_space_x // (4 * alien_width)
         
         # 计算屏幕可容纳多少行外星人
         ship_height = self.ship.rect.height
         available_space_y = (self.settings.screen_height - 
                              (3 * alien_height) - ship_height)
-        number_rows = available_space_y // (2 * alien_height)
+        number_rows = available_space_y // (4 * alien_height)
 
         # 创建外星人群
         for row_number in range(number_rows):
@@ -283,6 +294,9 @@ class AlienInvasion(object):
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+
+        # 显示得分
+        self.sb.show_score()
 
         # 如果游戏处于非活动状态，就绘制Play按钮
         if self.choosing_difficulty:
