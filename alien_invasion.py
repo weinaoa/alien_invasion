@@ -13,6 +13,7 @@ from bullet import Bullet
 from alien import Alien
 from game_stats import GameStats
 from button import Button
+from difficulty_button import DifficultyButton
 
 class AlienInvasion(object):
     """管理游戏资源和行为的类"""
@@ -39,10 +40,22 @@ class AlienInvasion(object):
 
         # 创建play按钮
         self.play_button = Button(self,'Play')
+        self.play_button.visible = True
+
+        self.difficulty_buttons = pygame.sprite.Group()
+        self._create_difficulty_buttons()
+        self.choosing_difficulty = False
 
         # 初始化暂停状态
         self.paused = False
 
+    def _create_difficulty_buttons(self):
+        # 创建难度选择按钮
+        easy = DifficultyButton(self, 'Easy', 1, (0, -100))
+        normal = DifficultyButton(self, 'Normal', 2, (0, 0))
+        hard = DifficultyButton(self, 'Hard', 3, (0, 100))
+        self.difficulty_buttons.add(easy, normal, hard)
+    
     def run_game(self):
         """开始游戏的主循环"""
         while True:
@@ -59,8 +72,17 @@ class AlienInvasion(object):
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                self._check_play_button(mouse_pos)
+                # mouse_pos = pygame.mouse.get_pos()
+                clicked = False
+                if self.choosing_difficulty:    # 新增难度选择处理
+                    for button in self.difficulty_buttons:
+                        if button.check_click(event.pos):
+                            button.set_difficulty()
+                            self._start_game()
+                            clicked = True
+                            break
+                else:
+                    self._check_play_button(event.pos)
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
@@ -70,7 +92,12 @@ class AlienInvasion(object):
         """在玩家单击play按钮时开始新游戏"""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
-            self._start_game()
+            self.choosing_difficulty = True
+            self.play_button.visible = False
+            pygame.mouse.set_visible(True)
+            # 重置游戏设置
+            # self.settings.initialize_dynamic_settings()
+            # self._start_game()
 
     def _start_game(self):
         # 重置游戏统计信息
@@ -84,12 +111,15 @@ class AlienInvasion(object):
         self.ship.center_ship()
         # 隐藏鼠标光标
         pygame.mouse.set_visible(False)
+        self.choosing_difficulty = False
 
     def _check_keydown_events(self,event):
         """响应按键"""
         # 按enter开始游戏
-        if event.key == pygame.K_RETURN and not self.stats.game_active:
-            self._start_game()
+        if event.key == pygame.K_RETURN:
+            if not self.stats.game_active and not self.choosing_difficulty:
+                self.choosing_difficulty = True
+                self.play_button.visible = False
         # 向右移动飞船
         elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
             self.ship.moving_right = True
@@ -144,12 +174,13 @@ class AlienInvasion(object):
         # 检查是否有子弹击中了外星人
         # 如果是，就删除相应的子弹和外星人
         collisions = pygame.sprite.groupcollide(
-            self.bullets,self.aliens,True,True
+            self.bullets,self.aliens,False,True
         )
         if not self.aliens:
             # 删除现有的子弹并新建一群外星人
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _check_aliens_bottom(self):
         """检查是否有外星人到达了屏幕底端"""
@@ -159,6 +190,7 @@ class AlienInvasion(object):
                 # 像飞船被撞到一样处理
                 self._ship_hit()
                 break
+
     def _update_aliens(self):
         """检查是否有外星人位于屏幕边缘，更新外星人群中所有外星人的位置"""
         self._check_fleet_edges()
@@ -253,7 +285,9 @@ class AlienInvasion(object):
         self.aliens.draw(self.screen)
 
         # 如果游戏处于非活动状态，就绘制Play按钮
-        if not self.stats.game_active:
+        if self.choosing_difficulty:
+            self.difficulty_buttons.draw(self.screen)
+        elif not self.stats.game_active and self.play_button.visible:
             self.play_button.draw_button()
 
         # 如果游戏处于暂停状态，显示暂停信息

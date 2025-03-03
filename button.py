@@ -5,6 +5,7 @@ class Button(object):
         """初始化按钮的属性"""
         self.screen = ai_game.screen
         self.screen_rect = ai_game.screen.get_rect()
+        self.visible = True
 
         # 设置按钮的尺寸和其他游戏
         self.width,self.height = 200,50
