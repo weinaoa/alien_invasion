@@ -96,18 +96,18 @@ class AlienInvasion(object):
         """在玩家单击play按钮时开始新游戏"""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
+            self.stats.reset_stats()
+            self.sb.prep_score()
+            self.sb.prep_level()
             self.choosing_difficulty = True
             self.play_button.visible = False
             pygame.mouse.set_visible(True)
-            self.sb.prep_score()
-            # 重置游戏设置
-            # self.settings.initialize_dynamic_settings()
-            # self._start_game()
+
 
     def _start_game(self):
         # 重置游戏统计信息
-        self.stats.reset_stats()
         self.stats.game_active = True
+
         #清空余下的外星人和子弹
         self.aliens.empty()
         self.bullets.empty()
@@ -120,13 +120,8 @@ class AlienInvasion(object):
 
     def _check_keydown_events(self,event):
         """响应按键"""
-        # 按enter开始游戏
-        if event.key == pygame.K_RETURN:
-            if not self.stats.game_active and not self.choosing_difficulty:
-                self.choosing_difficulty = True
-                self.play_button.visible = False
         # 向右移动飞船
-        elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+        if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
             self.ship.moving_right = True
         # 向左移动飞船
         elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
@@ -186,12 +181,17 @@ class AlienInvasion(object):
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points*len(aliens)
             self.sb.prep_score()
+            self.sb.check_high_score()
 
         if not self.aliens:
             # 删除现有的子弹并新建一群外星人
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+
+            # 提高等级
+            self.stats.level += 1
+            self.sb.prep_level()
 
     def _check_aliens_bottom(self):
         """检查是否有外星人到达了屏幕底端"""
@@ -230,6 +230,9 @@ class AlienInvasion(object):
         else:
             self.stats.game_active = False
             pygame.mouse.set_visible(True)
+            self.play_button.visible = True
+
+            
 
     def _create_fleet(self):
         """创建外星人群"""
