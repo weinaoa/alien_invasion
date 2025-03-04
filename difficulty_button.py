@@ -50,11 +50,11 @@ class DifficultyButton(Sprite):
             self.button_color,
             self.rect.inflate(20,10),
             border_radius=15,
-            width = 0
+            # width = 0
         )
         # 绘制文本
-        text_pos = (
-            self.rect.centerx - self.image.get_width()//2,
-            self.rect.centery - self.image.get_height()//2
-        )
-        self.screen.blit(self.image, text_pos)
+        # text_pos = (
+        #     self.rect.centerx - self.image.get_width()//2,
+        #     self.rect.centery - self.image.get_height()//2
+        # )
+        self.screen.blit(self.image, self.rect)

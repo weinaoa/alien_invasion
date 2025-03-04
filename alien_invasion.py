@@ -179,7 +179,7 @@ class AlienInvasion(object):
         # 检查是否有子弹击中了外星人
         # 如果是，就删除相应的子弹和外星人
         collisions = pygame.sprite.groupcollide(
-            self.bullets,self.aliens,True,True
+            self.bullets,self.aliens,False,True
         )
         if collisions:
             # 此处用的是高能子弹，如果用普通子弹的话，应该要改成遍历字典的方式
@@ -237,7 +237,7 @@ class AlienInvasion(object):
         # 外星人的间距为外星人宽度
         alien =Alien(self)
         alien_width,alien_height = alien.rect.size
-        available_space_x = self.settings.screen_width - (3*alien_width)
+        available_space_x = self.settings.screen_width - (2*alien_width)
         number_aliens_x = available_space_x // (4 * alien_width)
         
         # 计算屏幕可容纳多少行外星人
@@ -300,7 +300,8 @@ class AlienInvasion(object):
 
         # 如果游戏处于非活动状态，就绘制Play按钮
         if self.choosing_difficulty:
-            self.difficulty_buttons.draw(self.screen)
+            for button in self.difficulty_buttons.sprites():
+                button.draw()
         elif not self.stats.game_active and self.play_button.visible:
             self.play_button.draw_button()
 
