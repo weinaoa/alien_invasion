@@ -99,6 +99,7 @@ class AlienInvasion(object):
             self.stats.reset_stats()
             self.sb.prep_score()
             self.sb.prep_level()
+            self.sb.prep_ships()
             self.choosing_difficulty = True
             self.play_button.visible = False
             pygame.mouse.set_visible(True)
@@ -188,10 +189,13 @@ class AlienInvasion(object):
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+            self.start_new_level()
 
+    def start_new_level(self):
+        """开始新的等级"""
             # 提高等级
-            self.stats.level += 1
-            self.sb.prep_level()
+        self.stats.level += 1
+        self.sb.prep_level()
 
     def _check_aliens_bottom(self):
         """检查是否有外星人到达了屏幕底端"""
@@ -215,6 +219,7 @@ class AlienInvasion(object):
     def _ship_hit(self):
         """响应飞船被外星人撞到"""
         self.stats.ships_left -= 1
+        self.sb.prep_ships()
         if self.stats.ships_left > 0:
             # 将ships_left减1
             # 清空余下的外星人和子弹
