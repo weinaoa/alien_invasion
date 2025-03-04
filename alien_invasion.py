@@ -53,6 +53,10 @@ class AlienInvasion(object):
         # 初始化暂停状态
         self.paused = False
 
+        # 加载音效文件
+        pygame.mixer.init()
+        self.play_sound = pygame.mixer.Sound("sounds/start_game.mp3")  # 替换为您的音频文件路径
+
     def _create_difficulty_buttons(self):
         # 创建难度选择按钮
         easy = DifficultyButton(self, 'Easy', 1, (0, -100))
@@ -96,6 +100,9 @@ class AlienInvasion(object):
         """在玩家单击play按钮时开始新游戏"""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
+            # 播放音效
+            self.play_sound.play()
+
             self.stats.reset_stats()
             self.sb.prep_score()
             self.sb.prep_level()

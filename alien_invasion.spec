@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['alien_invasion.py'],
-    pathex=['alien.py', 'bullet.py', 'game_stats.py', 'ship.py', 'button.py', 'difficulty_button.py', 'settings.py'],
+    pathex=['alien.py', 'bullet.py', 'game_stats.py', 'ship.py', 'button.py', 'settings.py', 'difficulty_button.py', 'scoreboard.py'],
     binaries=[],
     datas=[],
     hiddenimports=[],
